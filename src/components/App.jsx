@@ -18,49 +18,44 @@ export class App extends Component{
 
   unique = (item) =>{
     const {contacts} = this.state;
-    for (const element of contacts) {
-      if(item.name === element.name || item.number === element.number){
-        alert("Repeatable contact");
-        return false;
-      }
-    }
-    return true;
+    const contact = contacts.map((elem) => elem.name).includes(item.name);
+    return (contact) ? false : true
   } 
 
-  formHandler = (e) =>{
-
-    e.preventDefault();
-    const formElements = e.currentTarget.elements;
-    const newItem = {
-      id:nanoid(3),
-      name: formElements.name.value,
-      number: formElements.number.value,
-    }
+  formHandler = (newItem) =>{
     if(this.unique(newItem)){
-      const newContacts = [...this.state.contacts,newItem]
-      this.setState({
-        contacts:newContacts
-      })
+      const newContact={
+        id:nanoid(3),
+        ...newItem
+      }
+      this.setState((prev)=>({
+        contacts:[...prev.contacts,newContact]
+      }))
+    }else{
+      alert(`${newItem.name} is repeatable contact`)
     }
-    e.target.reset();
   }
-
-
 
   filterHandler = (e) => {
     this.setState({
       filter:e.target.value
     })
   }
-   getFilteredList = () =>{
+
+  getFilteredList = () =>{
     if(this.state.filter ===""){
       return this.state.contacts;
     }
     return this.state.contacts.filter(item=>item.name.toLowerCase().includes(this.state.filter.toLowerCase().trim()));
 
-   }
+  }
+
+  removeContactHandler = (contactID) =>{
+    this.setState((prev) => ({
+      contacts:prev.contacts.filter(({ id }) => id !== contactID),
+    }))
+  }
   render(){
-    console.log("render",this.state);
     return (
       <div
         style={{
@@ -74,7 +69,7 @@ export class App extends Component{
       <ContactForm formHandler={this.formHandler} />
       </Section>
       <Section title={"Contacts"}>
-        <ContactList contacts={this.getFilteredList()} filterHandler={this.filterHandler}/>
+        <ContactList contacts={this.getFilteredList()} filterHandler={this.filterHandler} removeHandler={this.removeContactHandler}/>
       </Section>
       </div>
     );
