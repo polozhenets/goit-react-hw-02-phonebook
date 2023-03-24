@@ -18,22 +18,21 @@ export class App extends Component{
 
   unique = (item) =>{
     const {contacts} = this.state;
-    const contact = contacts.map((elem) => elem.name).includes(item.name);
-    return (contact) ? false : true
-  } 
+    return Boolean(contacts.find((elem) => elem.name === item.name)) 
+  }
 
   formHandler = (newItem) =>{
     if(this.unique(newItem)){
-      const newContact={
-        id:nanoid(3),
-        ...newItem
-      }
-      this.setState((prev)=>({
-        contacts:[...prev.contacts,newContact]
-      }))
-    }else{
       alert(`${newItem.name} is repeatable contact`)
+      return
     }
+    const newContact={
+      id:nanoid(3),
+      ...newItem
+    }
+    this.setState((prev)=>({
+      contacts:[...prev.contacts,newContact]
+    }))
   }
 
   filterHandler = (e) => {
